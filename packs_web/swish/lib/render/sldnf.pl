@@ -82,12 +82,45 @@ render_latex(_LatexString,_Options) -->
 	no_latex(latex).
 
 render_latex(LatexString, _Options) -->	% <svg> rendering
-	{ latex_stream(LatexString,SVG)
+  { latex_stream(LatexString,SVG0),
+    random(0,100000,R),
+    number_string(R,Rs),
+    string_concat(Rs,"-glyph",NewGlyph),
+    string_codes(NewGlyph,NewGlyphCodes0),
+    append(NewGlyphCodes0,T,NewGlyphCodes),
+    string_codes(SVG0,SVG0Codes),
+    phrase(rename_ids(NewGlyphCodes,T,SVGCodes),SVG0Codes,_),
+    string_codes(SVG,SVGCodes)
+          
 	},
   html(div([ class(['render-latex', 'reactive-size']),
 		       'data-render'('As tree')
 		     ],
 		     \svg(SVG, []))).
+
+      
+rename_ids(NewGlyph,O0,O) -->
+  "glyph",!,
+  {copy_term((NewGlyph,O0),(O,T))},
+  rename_ids(NewGlyph,O0,T).
+
+rename_ids(NewGlyph,O,[C|T])-->
+  [C],!,
+  rename_ids(NewGlyph,O,T).
+
+rename_ids(_NewGlyph,_O,[])-->
+  [].
+      
+
+
+rename_ids(NewGlyph,[NewGlyph|T]) -->
+  "glyph",!,
+  rename_ids(NewGlyph,T).
+
+rename_ids(NewGlyph,[C|T])-->
+  [C],
+  rename_ids(NewGlyph,T).
+
 
 %%	svg(+SVG:string, +Options:list)//
 %
@@ -95,9 +128,8 @@ render_latex(LatexString, _Options) -->	% <svg> rendering
 %	class 'reactive-size'.
 
 svg(SVG, _Options) -->
-	html([ style('svg:not(:root) {
-    overflow: visible;
-  }'),\[SVG],
+	html([ 
+  \[SVG],
 	       \js_script({|javascript||
 (function() {
    if ( $.ajaxScript ) {

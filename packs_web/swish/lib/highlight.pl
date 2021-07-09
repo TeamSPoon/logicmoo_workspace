@@ -884,11 +884,12 @@ style(table_mode(_Mode), table_mode,			   [text]).
 style(table_option(_Mode), table_option,		   [text]).
 
 
-neck_text(clause,       (:-)).
-neck_text(grammar_rule, (-->)).
-neck_text(method(send), (:->)).
-neck_text(method(get),  (:<-)).
-neck_text(directive,    (:-)).
+neck_text(clause,       (:-))  :- !.
+neck_text(grammar_rule, (-->)) :- !.
+neck_text(method(send), (:->)) :- !.
+neck_text(method(get),  (:<-)) :- !.
+neck_text(directive,    (:-))  :- !.
+neck_text(Text,         Text).		% new style
 
 head_type(exported,	 head_exported).
 head_type(public(_),	 head_public).
@@ -924,6 +925,11 @@ goal_type(foreign(_),	      goal_foreign,	 []).
 goal_type(local(Line),	      goal_local,	 [line(Line)]).
 goal_type(constraint(Line),   goal_constraint,	 [line(Line)]).
 goal_type(not_callable,	      goal_not_callable, []).
+goal_type(global(Type,_Loc),  Class,	         []) :-
+	global_class(Type, Class).
+global_class(dynamic,   goal_dynamic) :- !.
+global_class(multifile, goal_multifile) :- !.
+global_class(_,		goal_global).
 
 %%	goal_arity(+Goal, -Arity) is det.
 %

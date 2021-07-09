@@ -1,0 +1,54 @@
+// Interoperability test1
+
+syntax = "proto2";
+package scalar_test;
+
+enum Enum {
+  E1 = 0;
+  Enum2 = 1;
+  AnotherEnum = 2;
+}
+
+message Scalars1 {
+  // .proto types (from https://developers.google.com/protocol-buffers/docs/overview#scalar)
+  optional double   v_double   =  1;
+  optional float    v_float    =  2;
+  optional int32    v_int32    =  3; // variable-length encoding; inefficient for negative
+  optional int64    v_int64    =  4; // variable-length encoding; inefficient for negative
+  optional uint32   v_uint32   =  5; // variable-length encoding
+  optional uint64   v_uint64   =  6; // variable-length encoding
+  optional sint32   v_sint32   =  7; // variable-length encoding; efficient for negative
+  optional sint64   v_sint64   =  8; // variable-length encoding; efficient for negative
+  optional fixed32  v_fixed32  =  9; // unsigned (always 4 bytes)
+  optional fixed64  v_fixed64  = 10; // unsigned (always 8 bytes)
+  optional sfixed32 v_sfixed32 = 11; // (always 4 bytes)
+  optional sfixed64 v_sfixed64 = 12; // (always 8 byts)
+  optional bool     v_bool     = 13;
+  optional string   v_string   = 14; // UTF8
+  optional bytes    v_bytes    = 15; // blob
+  optional Enum     v_enum     = 16; // same as int32
+}
+
+message Scalars2 {
+  // v_Prolog wrapper types (see Wiretypes {#protobufs-wire-types} table)
+  optional double   v_double     =  1;
+  optional fixed64  v1_integer64 =  2;
+  optional sfixed64 v2_integer64 =  3;
+  optional float    v_float      =  4;
+  optional fixed32  v1_integer32 =  5;
+  optional sfixed64 v2_integer32 =  6;
+  optional sint32   v_integer1   =  7;
+  optional sint64   v_integer2   =  8;
+  optional int32    v1_unsigned  =  9;
+  optional int64    v2_unsigned  = 10;
+  optional uint32   v3_unsigned  = 11;
+  optional uint64   v4_unsigned  = 12;
+  optional bool     v_boolean    = 13;
+  optional Enum     v_enum       = 14;
+  optional string   v_atom       = 15;
+  optional bytes    v_codes      = 16;
+  optional string   v_utf8_codes = 17;
+  optional string   v_string     = 18;
+}
+
+// TODO:  embedded, repeated, packed

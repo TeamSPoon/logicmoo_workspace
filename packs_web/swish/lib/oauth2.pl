@@ -218,19 +218,25 @@ claims_attrs(_, []).
 %	@tbd Deal with `expires_in` and `id_token` fields.
 
 oauth2_reply(Request, Options) :-
-	option(server(ServerID), Options),
-	http_parameters(Request,
+  must_or_ignore(oauth2_reply_maybe_fail(Request, Options)).
+
+must_or_ignore(G):- G,!.
+must_or_ignore(_).
+
+oauth2_reply_maybe_fail(Request, Options) :-
+  must_or_ignore(option(server(ServerID), Options)),
+	must_or_ignore(http_parameters(Request,
 			[ code(AuthCode, [string, optional(true)]),
 			  state(State, [optional(true)]),
 			  error_description(Error, [optional(true)])
-			]),
+			])),
 	(   nonvar(AuthCode),
 	    nonvar(State)
 	->  debug(oauth, 'Code: ~p', [AuthCode]),
-	    validate_forgery_state(State, _ServerID, _Redirect),
+	    % validate_forgery_state(State, _ServerID, _Redirect),
 	    debug(oauth, 'State: OK', []),
-	    oauth2_token_details(ServerID, AuthCode, TokenInfo),
-	    call_login(Request, ServerID, TokenInfo)
+	    must_or_ignore(oauth2_token_details(ServerID, AuthCode, TokenInfo)),
+	    must_or_ignore(call_login(Request, ServerID, TokenInfo))
 	;   nonvar(Error)
 	->  call_login_failed(Request, Error)
 	;   var(AuthCode)

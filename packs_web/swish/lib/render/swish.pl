@@ -60,3 +60,5 @@ term_rendering(File, _Vars, _Options) -->
 
 swish_extension(pl).
 swish_extension(swinb).
+swish_extension(chr).
+swish_extension(plt).

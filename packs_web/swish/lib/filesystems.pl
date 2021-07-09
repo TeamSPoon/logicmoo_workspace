@@ -114,10 +114,10 @@ http:status_page(Term, Context, HTML):- pprint_ecp(red,http:status_page(Term, Co
    
 % handler(swish(help), swish_help:serve_files_in_directory(swish_help), true, [id(help)]).
 
-:- asserta((http_dispatch:handler(root(filesystem), swish_filesystems:serve_file_or_directory('/'), true, [id(example_serv_root_slash)]))).
-:- asserta((http_dispatch:handler(swish(filesystem), swish_filesystems:serve_file_or_directory('/'), true, [id(example_serv_swish_slash)]))).
-:- asserta((http_dispatch:handler(root(example), swish_filesystems:serve_file_or_directory(example), true, [id(example_serv_root)]))).
-:- asserta((http_dispatch:handler(swish(example), swish_filesystems:serve_file_or_directory(example), true, [id(example_serv_swish)]))).
+%:- ((http_handler(handler(root(filesystem), swish_filesystems:serve_file_or_directory('/'), true, [id(example_serv_root_slash)]))).
+:- ((http_handler(swish(filesystem), swish_filesystems:serve_file_or_directory('/'), [id(example_serv_swish_slash)]))).
+%:- asserta((http_dispatch:handler(root(example), swish_filesystems:serve_file_or_directory(example), true, [id(example_serv_root)]))).
+%:- ((http_handler(swish(example), swish_filesystems:serve_file_or_directory(example), true, [id(example_serv_swish)]))).
 
 :- use_module(library(http/http_dirindex)).
 
@@ -205,7 +205,7 @@ both_http_handlers(Loc):-
 
 :- both_http_handlers(node_modules).
 :- both_http_handlers(icons).
-:- both_http_handlers(filesystem).
+%:- both_http_handlers(filesystem).
 :- both_http_handlers(js).
 :- both_http_handlers(css).
 :- both_http_handlers(plugin).

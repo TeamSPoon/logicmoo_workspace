@@ -1,56 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.equinox.internal.p2.ui.dialogs.InstallWizard.SelectableIUsPage">
-		<item value="200" key="DetailsSashWeight"/>
-		<item value="420" key="NameColumnWidth"/>
-		<item value="140" key="VersionColumnWidth"/>
-		<item value="280" key="IDColumnWidth"/>
-		<item value="800" key="ListSashWeight"/>
+		<item key="DetailsSashWeight" value="200"/>
+		<item key="NameColumnWidth" value="420"/>
+		<item key="VersionColumnWidth" value="140"/>
+		<item key="IDColumnWidth" value="280"/>
+		<item key="ListSashWeight" value="800"/>
 	</section>
 	<section name="AvailableIUsPage">
-		<item value="1" key="AvailableViewType"/>
-		<item value="800" key="AvailableListSashWeight"/>
-		<item value="true" key="HideInstalledContent"/>
-		<item value="314" key="AvailableVersionColumnWidth"/>
-		<item value="true" key="ShowLatestVersionsOnly"/>
-		<item value="200" key="AvailableDetailsSashWeight"/>
-		<item value="true" key="ResolveInstallWithAllSites"/>
-		<item value="525" key="AvailableNameColumnWidth"/>
-		<item value="true" key="FilterOnEnv"/>
+		<item key="AvailableViewType" value="1"/>
+		<item key="AvailableListSashWeight" value="800"/>
+		<item key="HideInstalledContent" value="true"/>
+		<item key="AvailableVersionColumnWidth" value="314"/>
+		<item key="ShowLatestVersionsOnly" value="true"/>
+		<item key="AvailableDetailsSashWeight" value="200"/>
+		<item key="ResolveInstallWithAllSites" value="true"/>
+		<item key="AvailableNameColumnWidth" value="525"/>
+		<item key="FilterOnEnv" value="true"/>
 	</section>
 	<section name="org.eclipse.equinox.internal.p2.ui.sdk.scheduler.migration.MigrationWizard.SelectableIUsPage">
-		<item value="200" key="DetailsSashWeight"/>
-		<item value="420" key="NameColumnWidth"/>
-		<item value="140" key="VersionColumnWidth"/>
-		<item value="280" key="IDColumnWidth"/>
-		<item value="800" key="ListSashWeight"/>
+		<item key="DetailsSashWeight" value="200"/>
+		<item key="NameColumnWidth" value="420"/>
+		<item key="VersionColumnWidth" value="140"/>
+		<item key="IDColumnWidth" value="280"/>
+		<item key="ListSashWeight" value="800"/>
 	</section>
 	<section name="org.eclipse.equinox.internal.p2.ui.sdk.scheduler.migration.MigrationWizard.ResolutionResultsPage">
-		<item value="200" key="DetailsSashWeight"/>
-		<item value="400" key="NameColumnWidth"/>
-		<item value="200" key="VersionColumnWidth"/>
-		<item value="200" key="IDColumnWidth"/>
-		<item value="800" key="ListSashWeight"/>
+		<item key="DetailsSashWeight" value="200"/>
+		<item key="NameColumnWidth" value="400"/>
+		<item key="VersionColumnWidth" value="200"/>
+		<item key="IDColumnWidth" value="200"/>
+		<item key="ListSashWeight" value="800"/>
 	</section>
 	<section name="org.eclipse.equinox.internal.p2.ui.dialogs.InstallWizard.ResolutionResultsPage">
-		<item value="200" key="DetailsSashWeight"/>
-		<item value="400" key="NameColumnWidth"/>
-		<item value="200" key="VersionColumnWidth"/>
-		<item value="200" key="IDColumnWidth"/>
-		<item value="800" key="ListSashWeight"/>
+		<item key="DetailsSashWeight" value="200"/>
+		<item key="NameColumnWidth" value="400"/>
+		<item key="VersionColumnWidth" value="200"/>
+		<item key="IDColumnWidth" value="200"/>
+		<item key="ListSashWeight" value="800"/>
 	</section>
 	<section name="org.eclipse.equinox.internal.p2.ui.dialogs.InstallWizard.WizardSettings">
-		<item value="1039" key="DIALOG_WIDTH"/>
-		<item value="1|Tahoma|8.25|0|WINDOWS|1|-11|0|0|0|400|0|0|0|1|0|0|0|0|Tahoma" key="DIALOG_FONT_NAME"/>
-		<item value="774" key="DIALOG_HEIGHT"/>
-		<item value="271" key="DIALOG_X_ORIGIN"/>
-		<item value="131" key="DIALOG_Y_ORIGIN"/>
+		<item key="DIALOG_WIDTH" value="987"/>
+		<item key="DIALOG_FONT_NAME" value="1|Sans|10.0|0|GTK|1|"/>
+		<item key="DIALOG_HEIGHT" value="768"/>
+		<item key="DIALOG_X_ORIGIN" value="274"/>
+		<item key="DIALOG_Y_ORIGIN" value="157"/>
 	</section>
 	<section name="org.eclipse.equinox.internal.p2.ui.dialogs.PreselectedIUInstallWizard.WizardSettings">
-		<item value="874" key="DIALOG_WIDTH"/>
-		<item value="1|Tahoma|8.25|0|WINDOWS|1|-11|0|0|0|400|0|0|0|1|0|0|0|0|Tahoma" key="DIALOG_FONT_NAME"/>
-		<item value="498" key="DIALOG_HEIGHT"/>
-		<item value="488" key="DIALOG_X_ORIGIN"/>
-		<item value="190" key="DIALOG_Y_ORIGIN"/>
+		<item key="DIALOG_WIDTH" value="874"/>
+		<item key="DIALOG_FONT_NAME" value="1|Tahoma|8.25|0|WINDOWS|1|-11|0|0|0|400|0|0|0|1|0|0|0|0|Tahoma"/>
+		<item key="DIALOG_HEIGHT" value="498"/>
+		<item key="DIALOG_X_ORIGIN" value="488"/>
+		<item key="DIALOG_Y_ORIGIN" value="190"/>
 	</section>
 </section>

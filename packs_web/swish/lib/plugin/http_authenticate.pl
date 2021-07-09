@@ -362,9 +362,10 @@ swish_add_user :-
 	    fail
 	).
 
+interrupted(_Sig) :- gethostname('logicmoo.org'), !.
 interrupted(_Sig) :- gethostname(gitlab), !.
 interrupted(_Sig) :-
-	halt(2).
+	nop(halt(2)).
 
 read_string(Prompt, String) :-
 	format(user_error, '~w', [Prompt]),

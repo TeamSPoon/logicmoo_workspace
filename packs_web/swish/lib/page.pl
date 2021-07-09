@@ -51,20 +51,22 @@
 	    swish_js//0,
 	    swish_css//0
 	  ]).
+
+
 :- use_module(library(http/http_open)).
 :- use_module(library(http/http_dispatch)).
 :-if(\+ prolog_load_context(reloading,true)).
 :- use_module(library(http/http_parameters)).
 :- use_module(library(http/http_header)).
 :- else.
-:- use_module(library(http/http_parameters),except([is_meta/1])).
-:- use_module(library(http/http_header),except([connection/2])).
+%:- use_module(library(http/http_parameters),except([is_meta/1])).
+%:- use_module(library(http/http_header),except([connection/2])).
 :-endif.
 :- use_module(library(http/html_write)).
 :-if(\+ prolog_load_context(reloading,true)).
 :- use_module(library(http/js_write)).
 :- else.
-:- use_module(library(http/js_write),except([ws/2])).
+%:- use_module(library(http/js_write),except([ws/2])).
 :-endif.
 :- use_module(library(http/json)).
 :- use_module(library(http/http_json)).
@@ -83,13 +85,16 @@
 :-if(\+ prolog_load_context(reloading,true)).
 :- use_module(config).
 :- else.
-:- use_module(config,except([authenticate/2])).
+%:- use_module(config,except([authenticate/2])).
 :-endif.
 :- use_module(help).
 :- use_module(search).
 :- use_module(chat).
 :- use_module(authenticate).
 :- use_module(pep).
+
+:- use_module(library(xlisting/xlisting_web_server)).
+
 
 /** <module> Provide the SWISH application as Prolog HTML component
 
@@ -143,10 +148,13 @@ swish_reply2(Options, Request) :-
 	option(method(Method), Request),
 	Method \== get, Method \== head, !,
 	swish_rest_reply(Method, Request, Options).
+
 swish_reply2(_, Request) :-
 	swish_reply_resource(Request), !.
+
 swish_reply2(Options, Request) :-
 	swish_reply_config(Request, Options), !.
+
 swish_reply2(SwishOptions, Request) :-
 	Params = [ code(_,	  [optional(true)]),
 		   show_beware(_, [optional(true)]),
@@ -359,13 +367,19 @@ swish_page(Options) -->
 	swish_navbar(Options),
 	swish_content(Options).
 
+:- multifile
+	cp_menu:menu_item/2,
+	cp_menu:menu_popup_order/2.
+:- dynamic
+	cp_menu:menu_item/2,
+	cp_menu:menu_popup_order/2.
+
 %%	swish_navbar(+Options)//
 %
 %	Generate the swish navigation bar.
 
-swish_navbar(Options) -->
-	swish_resources,
-	html(div([id('navbarhelp'),style('height:40px;margin: 10px 5px;text-align:center')], %;line-height: 40px')],
+cplint_header -->
+  	html(div([id('navbarhelp'),style('height:40px;margin: 10px 5px;text-align:center')], %;line-height: 40px')],
         [span([style('color:darkblue')],['TRILL']),
 	     span([style('color:maroon')],[' on ']),
 	     span([style('color:maroon')],['cplint on ']),
@@ -373,53 +387,60 @@ swish_navbar(Options) -->
         span([style('color:maroon')],['SH']),
         ' is a web application for probabilistic logic programming',
         ' with a Javascript-enabled browser.',
-		' which embeds the tableau reasoners TRILL, TRILL',
-		span([style('vertical-align:super;font-size:smaller')],['P']),
-		' and TORNADO.',
-		&(nbsp), &(nbsp), &(nbsp),
-		a([id('about')],['About']),
-		&(nbsp), &(nbsp), &(nbsp),
-		a([href('/help/about.html'),target('_blank')],['about.html']),
-		&(nbsp), &(nbsp), &(nbsp),
-		a([href('http://friguzzi.github.io/cplint/'),target('_blank')],['cplint Help']),
-		&(nbsp), &(nbsp), &(nbsp),
-		a([href('/help/help-trill.html'),target('_blank')],['Trill Help']),
-		&(nbsp), &(nbsp), &(nbsp),
-		a([href('http://arnaudfadja.github.io/phil/'),target('_blank')],['PHIL-Help']),
-		&(nbsp), &(nbsp), &(nbsp),
-		a([href('/help/credits.html'),target('_blank')],['Credits']),
-		&(nbsp), &(nbsp),
-		a([href('https://edu.swi-prolog.org/'),target('_blank')],['Online course']),
-		&(nbsp), &(nbsp),
-        a([id('dismisslink'),href('')],['Dismiss']),
-p(['Updated: ',
-a([href('/e/phil_examples.swinb')],['PHIL examples']),', ',
-a([href('/e/diabetes.swinb')],['diabetes']),', ',
-a([href('/e/fruit.swinb')],['fruit selling']),', ',
-a([href('/e/ship.swinb')],['fire on a ship']),', ',
-a([href('/e/decision_theory.swinb')],['DTProbLog']),', ',
-a([href('http://ml.unife.it/plp-book/'),target('_blank')],["book"])
-])
-       ]))
-        ,
-
-		html(nav([ class([navbar, 'navbar-default']),
+      		' which embeds the tableau reasoners TRILL, TRILL',
+      		span([style('vertical-align:super;font-size:smaller')],['P']),
+      		' and TORNADO.',
+      		&(nbsp), &(nbsp), &(nbsp),
+      		a([id('about')],['About']),
+      		&(nbsp), &(nbsp), &(nbsp),
+      		a([href('/help/about.html'),target('_blank')],['about.html']),
+      		&(nbsp), &(nbsp), &(nbsp),
+      		a([href('http://friguzzi.github.io/cplint/'),target('_blank')],['cplint Help']),
+      		&(nbsp), &(nbsp), &(nbsp),
+      		a([href('/help/help-trill.html'),target('_blank')],['Trill Help']),
+      		&(nbsp), &(nbsp), &(nbsp),
+      		a([href('http://arnaudfadja.github.io/phil/'),target('_blank')],['PHIL-Help']),
+      		&(nbsp), &(nbsp), &(nbsp),
+      		a([href('/help/credits.html'),target('_blank')],['Credits']),
+      		&(nbsp), &(nbsp),
+      		a([href('https://edu.swi-prolog.org/'),target('_blank')],['Online course']),
+      		&(nbsp), &(nbsp),
+              a([id('dismisslink'),href('')],['Dismiss']),
+      p(['Updated: ',
+      a([href('/e/bag_mpe.pl')],['MPE']),', ',
+      a([href('/e/bag_game_mpe.pl')],['MPE']),', ',
+      a([href('/e/eruption_mpe.pl')],['MPE']),', ',
+      a([href('/e/bag_1.pl')],['MAP']),', ',
+      a([href('/e/bag_game_vit.pl')],['Viterbi']),', ',
+      a([href('/e/eruption_vit.pl')],['Viterbi']),', ',
+      a([href('/e/phil_examples.swinb')],['PHIL examples']),', ',
+      a([href('/e/diabetes.swinb')],['diabetes']),', ',
+      a([href('/e/fruit.swinb')],['fruit selling']),', ',
+      a([href('/e/ship.swinb')],['fire on a ship']),', ',
+      a([href('/e/decision_theory.swinb')],['DTProbLog']),', ',
+      a([href('http://ml.unife.it/plp-book/'),target('_blank')],["book"])
+      ])
+   ])).
+        
+ 
+swish_navbar(Options) -->    
+	swish_resources,  
+  % cplint_header,
+  html(nav([ class([navbar, 'navbar-default']),
 		   role(navigation)
 		 ],
-		 [ div(class('navbar-header'),
-		       [ \collapsed_button,
-			 \swish_logos(Options)
-		       ]),
-		   div([ class([collapse, 'navbar-collapse']),
-			 id(navbar)
-		       ],
-		       [ ul([class([nav, 'navbar-nav', menubar])], []),
-			 ul([class([nav, 'navbar-nav', 'navbar-right'])],
-			    [ li(\notifications(Options)),
-			      li(\search_box(Options)),
-			      \local_li_login_button(Options),
-			      li(\broadcast_bell(Options)),
-			      li(\updates(Options))
+     
+     [ 
+      % div(class('navbar-header'), [ \collapsed_button, \swish_logos(Options) ]),
+ 		  div([ class([collapse, 'navbar-collapse']),  id(navbar) ], 
+      [ ul([class([nav, 'navbar-nav', 'menubar'])], []),
+        ul([class([nav, 'navbar-nav', 'navbar-right'])],
+			    [ div([id('cp-menu'), class(menu)], \cp_menu),
+            li(\ notifications(Options)),
+			      li(\ search_box(Options)),
+			      \ local_li_login_button(Options),
+			      li(\ broadcast_bell(Options)),
+			      li(\ updates(Options))
 			    ])
 		       ])
 		 ])).
@@ -482,7 +503,7 @@ swish_title(_Options) -->
 swish_logos(Options) -->
 	swish_config:logo(Options), !.
 swish_logos(Options) -->
-	pengine_logo(Options),
+	% pengine_logo(Options),
 	swish_logo(Options).
 
 %!	swish_config:logo(+Options)// is semidet.
@@ -554,10 +575,10 @@ swish_content(Options) -->
 
 swish_config_hash(Options) -->
 	{ swish_config_hash(Hash, Options) },
-	js_script({|javascript(Hash)||
+	js_script(\ ['
 		   window.swish = window.swish||{};
-		   window.swish.config_hash = Hash;
-		   |}).
+		   window.swish.config_hash = ', \ js_expression(Hash), ';
+		   ']).
 
 
 %!	swish_options(+Options)//
@@ -567,11 +588,13 @@ swish_config_hash(Options) -->
 %	The options are set per session.
 
 swish_options(Options) -->
-	js_script({|javascript||
+  js_script(\ ['\n\t\t   window.swish = window.swish||{};\n\t\t   window.swish.option = window.swish.option||{};\n\t\t  ']),
+	/*js_script({|javascript||
 		   window.swish = window.swish||{};
 		   window.swish.option = window.swish.option||{};
-		  |}),
+		  |}),*/
 	swish_options([show_beware, preserve_state], Options).
+
 
 swish_options([], _) --> [].
 swish_options([H|T], Options) -->
@@ -583,9 +606,13 @@ swish_option(Name, Options) -->
 	  option(Opt, Options),
 	  JSVal = @(Val)
 	}, !,
-	js_script({|javascript(Name, JSVal)||
+  js_script(\ ['\n\t\t   window.swish.option[', \ js_expression(Name), '] = ', \ js_expression(JSVal), ';\n\t\t   ']).
+	/*js_script({|javascript(Name, JSVal)||
 		   window.swish.option[Name] = JSVal;
 		   |}).
+*/
+
+
 swish_option(_, _) -->
 	[].
 
@@ -804,8 +831,42 @@ swish_resources -->
 swish_js  --> html_post(head, \include_swish_js).
 swish_css --> html_post(head, \include_swish_css).
 
+include_butterfly_js -->
+ ['
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script> <!-- necessary for the "draggable" ui  -->
+<script src="/swish/lm_xref/pixmapx/popupmenu/scripts/Popup-plugin.js"></script>
+<script src="/swish/lm_xref/pixmapx/popupmenu/scripts/Example.js"></script>
+
+<link rel="shortcut icon" href="/static/images/favicon.png?">
+<link rel="stylesheet" type="text/css" href="/swish/css/menu.css">
+<link rel="stylesheet" type="text/css" href="/swish/css/cliopatria.css">
+<script type="text/javascript" src="/swish/js/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="/swish/js/cliopatria.js"></script>
+<link type="text/css" rel="stylesheet" href="/swish/css/term.css">
+<link type="text/css" rel="stylesheet" href="/swish/css/butterfly_term.css">
+
+<link rel="stylesheet" type="text/css" href="/www/yui/2.7.0/build/autocomplete/assets/skins/sam/autocomplete.css">
+<script type="text/javascript" src="/www/yui/2.7.0/build/utilities/utilities.js"></script>
+<script type="text/javascript" src="/www/yui/2.7.0/build/datasource/datasource.js"></script>
+<script type="text/javascript" src="/www/yui/2.7.0/build/autocomplete/autocomplete.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/swish/lm_xref/pixmapx/selected/css/social.selection.css">
+<script src="/swish/lm_xref/pixmapx/selected/js/social.selection.js"></script>
+<link rel="stylesheet" type="text/css" href="/swish/lm_xref/pixmapx/selected/css/social.selection.css">
+<!-- <link rel="stylesheet" type="text/css" href="/swish/lm_xref/pixmapx/selected/css/example.css"> -->
+
+<link rel="stylesheet" type="text/css" href="/swish/lm_xref/pixmapx/popupmenu/styles/Popup-plugin.css">
+<!-- <link rel="stylesheet" type="text/css" href="/swish/lm_xref/pixmapx/popupmenu/styles/Example.css"> -->
+<!--Use either font-awesome icons or Google icons with these links. Other icons could also be used if preferred-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">'].
+
 % // Trill's ga(''create'', ''UA-16202613-11'', ''auto''); 
 include_swish_js -->
+
+  % include_butterfly_js,
 	html(script([],[
       '(function(i,s,o,g,r,a,m){i[''GoogleAnalyticsObject'']=r;i[r]=i[r]||function(){
        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -825,11 +886,19 @@ include_swish_js -->
 		    ], [])),
 		    filesystems_res.
 
+/*
 rjs_timeout('swish-min') --> !,
 	js_script({|javascript||
 // Override RequireJS timeout, until main file is loaded.
 window.require = { waitSeconds: 0 };
 		  |}).
+*/
+rjs_timeout('swish-min') --> !,
+  js_script(\ ['
+// Override RequireJS timeout, until main file is loaded.
+window.require = { waitSeconds: 0 };
+     ']).
+
 rjs_timeout(_) --> [].
 
 

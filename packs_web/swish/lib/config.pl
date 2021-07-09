@@ -72,6 +72,11 @@ swish_reply_config(Request, Options) :-
 	json_config(JSON, Options),
 	reply_json(JSON).
 
+swish_reply_config(Request):- swish_reply_config(Request, []).
+
+:- http_handler('/swish_config.json', swish_reply_config,[priority(200)]).
+:- http_handler(swish('swish_config.json'), swish_reply_config,[priority(200)]).
+
 %%	swish_config_hash(-Hash, +Options) is det.
 %
 %	True if Hash is the SHA1 of the SWISH config.

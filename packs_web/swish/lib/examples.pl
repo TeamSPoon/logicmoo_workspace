@@ -104,14 +104,16 @@ user:file_search_path(example, swish(UFSP)):- ufsp(UFSP).
                   id(swish_group_extended_examples)]).
 
 list_extended_example(_GetPostPut, Example, _Request) :-
-    http_absolute_location(swish('e/'), HREF, []),
+    http_absolute_location(swish(e/Example), HREF, []),
 	atom_concat('/opt/logicmoo_workspace/packs_web/swish/examples/',Example,Dir),
         dir_to_pattern(Dir,Pattern),
 	expand_file_name(Pattern, Files),
-	maplist(ex_file_json(HREF), Files, Menu),
+  % wdmsg(Example=Files),
+	convlist(ex_file_json(HREF), Files, Menu),
 	reply_json(Menu).
 
 dir_to_pattern(Dir,Pattern):- sub_string(Dir, _, _, _, "*"),!,Dir=Pattern.
+dir_to_pattern(Dir,Pattern):- string_concat(Dir, "/*", Pattern).
 dir_to_pattern(Dir,Pattern):- string_concat(Dir, "/*.{pl,swinb,*}", Pattern).
 	
 :- http_handler(swish(list_extended_examples),
@@ -120,6 +122,7 @@ dir_to_pattern(Dir,Pattern):- string_concat(Dir, "/*.{pl,swinb,*}", Pattern).
 
 list_extended_examples(_Request) :-
      examples(AllExamples, [community(true)]),
+
      example_menu(AllExamples, Menu),
      reply_json(Menu).
 
@@ -166,7 +169,7 @@ list_examples(_Request) :-
 	reply_json(Menu).
 
 example_menu(AllExamples, Menu) :-
-	include(pos_ranked, AllExamples, ForMenu),
+	convlist(pos_ranked, AllExamples, ForMenu),
 	insert_group_dividers(ForMenu, Menu).
 
 pos_ranked(Ex) :-
@@ -224,7 +227,7 @@ swish_examples(SWISHExamples, Options) :-
 swish_examples_no_cache(SWISHExamples, Options) :-
         option(extra_files(false), Options),!, no_examples(SWISHExamples).
 swish_examples_no_cache(SWISHExamples,_Options) :-
-	http_absolute_location(swish(example), HREF, []),
+	http_absolute_location(swish(e), HREF, []),
 	findall(Index,
 		absolute_file_name(example(.), Index,
 				   [ access(read),
@@ -233,15 +236,15 @@ swish_examples_no_cache(SWISHExamples,_Options) :-
 				     solutions(all)
 				   ]),
 		ExDirs),
-	maplist(index_json(HREF), ExDirs, SWISHExamples).
+	convlist(index_json(HREF), ExDirs, SWISHExamples).
 
 
 join_examples(PerDirV, Files) :-
         flatten(PerDirV,PerDir),
 	menu_groups(PerDir, Groups),
-	maplist(get_or(files, []), PerDir, FilesPerDir),
+	convlist(get_or(files, []), PerDir, FilesPerDir),
 	append(FilesPerDir, Files0),
-	maplist(add_grank(Groups), Files0, Files1),
+	convlist(add_grank(Groups), Files0, Files1),
 	sort(grank, =<, Files1, Files).
 
 add_grank(Groups, File0, File) :-
@@ -255,7 +258,7 @@ add_grank(_, File0, File) :-
 	File = File0.put(grank, -1).
 
 menu_groups(PerDir, Groups) :-
-	maplist(get_or(menu, []), PerDir, GroupsPerDir),
+	convlist(get_or(menu, []), PerDir, GroupsPerDir),
 	append(GroupsPerDir, Groups0),
 	sort(group, @>, Groups0, Groups1),
 	sort(rank,  =<, Groups1, Groups).
@@ -291,19 +294,19 @@ index_json(HREF, Dir, json{menu:[json{group:Group, rank:10000}],
 	example_files(HREF, Dir, Files0),
     file_base_name(Dir, Base),
     format(atom(Group),'~w',[Base]),
-	maplist(add_group(Group), Files0, Files).
+	convlist(add_group(Group), Files0, Files).
 	
 	
 index_json(HREF, Dir, json{menu:[json{group:examples, rank:10000}],
 			   files:Files}) :-
 	example_files(HREF, Dir, Files0),
-	maplist(add_group(examples), Files0, Files).
+	convlist(add_group(examples), Files0, Files).
 
 example_files(HREF, LDir, JSON) :-
-   absolute_file_name(LDir, Dir, [access(read), file_errors(fail), file_type(directory)]),
+  absolute_file_name(LDir, Dir, [access(read), file_errors(fail), file_type(directory)]),
 	string_concat(Dir, "/*.{pl,swinb}", Pattern),
 	expand_file_name(Pattern, Files),
-	maplist(ex_file_json(HREF), Files, JSON).
+	convlist(ex_file_json(HREF), Files, JSON).
 
 read_file_to_json(File, JSON) :-
 	setup_call_cleanup(
@@ -359,8 +362,20 @@ in_ex_list(Examples, Ex) :-
 %
 %	Create a JSON representation for the given example file.
 
-ex_file_json(HREF0, Path, json{file:File, href:HREF, title:Title, group:Group}) :-
+ex_file_json(HREF0, Path, json{type:"unknown", file:File, href:HREF, title:Title, group:Group}) :-
+  exists_file(Path),
 	file_base_name(Path, File),
+  File \== is_dir, File \== 'index.json',
+	file_name_extension(Base, _, File),
+	file_name_to_title(Base, Title),
+	file_group(File,OneDir), format(atom(Group),'~w',[OneDir]),
+	directory_file_path(HREF0, File, HREF).
+
+ex_file_json(HREF0, Path, json{type:"submenu", items:Files, href:HREF, title:Title, group:Group}) :-
+  fail, exists_directory(Path),
+	file_base_name(Path, File),
+  atomic_list_concat([Path,'/*'],Matches),
+  expand_file_name(Matches,Files),
 	file_name_extension(Base, _, File),
 	file_name_to_title(Base, Title),
 	file_group(File,OneDir), format(atom(Group),'~w',[OneDir]),
@@ -384,6 +399,7 @@ file_name_to_title(Path, Title):- atom(Path), sub_string(Path, _, _, _, '/'),
 file_name_to_title(Path, Title):- atom(Path), sub_string(Path, _, _, _, '.'),
 	file_name_extension(File, _, Path), !,
         file_name_to_title(File, Title).
+
 :- if(current_predicate(restyle_identifier/3)).
 file_name_to_title(Base, Title) :-
 	restyle_identifier(style(true,false,' '), Base, Title).
