@@ -136,7 +136,10 @@ http:location(pldoc, swish(pldoc), [priority(100)]).
 %	  - preserve_state(Boolean)
 %	  If `true`, save state on unload and restore old state on load.
 
-swish_reply(Options, Request) :-
+swish_reply(Options, Request):-
+  in_bfly(f,swish_reply0(Options, Request)).
+
+swish_reply0(Options, Request) :-
 	(   option(identity(_), Options)
 	->  Options2 = Options
 	;   authenticate(Request, Auth),
@@ -186,8 +189,8 @@ swish_reply3(_, Options) :-
 swish_reply3(_, Options) :-
 	reply_html_page(
 	    swish(main),
-	    \swish_title(Options),
-	    \swish_page(Options)).
+	    \ swish_title(Options),
+	    \ swish_page(Options)),!.
 
 params_options([], []).
 params_options([H0|T0], [H|T]) :-
